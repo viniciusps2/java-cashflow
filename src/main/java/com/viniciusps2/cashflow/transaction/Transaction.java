@@ -1,15 +1,15 @@
 package com.viniciusps2.cashflow.transaction;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.viniciusps2.cashflow.account.Account;
-
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
 public class Transaction {
-
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
@@ -18,18 +18,34 @@ public class Transaction {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    private Double value;
-    private Date clearingDate;
+    private BigDecimal value;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private Date viewDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd")
+    private Date paymentDate;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern="yyyy-MM-dd")
     private Date dueDate;
+
     private String description;
+
+    @CreatedDate
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdDate;
 
     public Transaction() {
     }
 
-    public Transaction(String description, double value, Account account) {
+    public Transaction(String description, BigDecimal bigDecimal, Account account, Date dueDate) {
         this.description = description;
-        this.value = value;
+        this.value = bigDecimal;
         this.account= account;
+        setDueDate(dueDate);
     }
 
     public Long getId() {
@@ -48,20 +64,21 @@ public class Transaction {
         this.account = account;
     }
 
-    public Double getValue() {
+    public BigDecimal getValue() {
         return value;
     }
 
-    public void setValue(Double value) {
+    public void setValue(BigDecimal value) {
         this.value = value;
     }
 
-    public Date getClearingDate() {
-        return clearingDate;
+    public Date getPaymentDate() {
+        return paymentDate;
     }
 
-    public void setClearingDate(Date clearingDate) {
-        this.clearingDate = clearingDate;
+    public void setPaymentDate(Date paymentDate) {
+        this.paymentDate = paymentDate;
+        defineViewDate();
     }
 
     public Date getDueDate() {
@@ -70,6 +87,7 @@ public class Transaction {
 
     public void setDueDate(Date dueDate) {
         this.dueDate = dueDate;
+        defineViewDate();
     }
 
     public String getDescription() {
@@ -78,6 +96,22 @@ public class Transaction {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Date getViewDate() {
+        return viewDate;
+    }
+
+    public void defineViewDate() {
+        this.viewDate = paymentDate != null ? paymentDate : dueDate;
+    }
+
+    public Date getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(Date createdDate) {
+        this.createdDate = createdDate;
     }
 
     @Override

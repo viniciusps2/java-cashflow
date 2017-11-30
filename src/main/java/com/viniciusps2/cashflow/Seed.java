@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Date;
 
 @Component
 public class Seed {
@@ -20,11 +23,20 @@ public class Seed {
 
     @PostConstruct
     public void init() {
+/*
 
         Account account = new Account("Santander");
         accountRepository.save(account);
-        transactionRepository.save(new Transaction("Compra 1", 55.0, account));
-        transactionRepository.save(new Transaction("Compra 2", 115.0, account));
+        for (int i = 0; i < 20; i++) {
+            BigDecimal value = new BigDecimal(100.50 + i)
+                    .divide(new BigDecimal(2), RoundingMode.DOWN);
+
+            transactionRepository.save(
+                    new Transaction(String.format("Compra %d", i), value, account, new Date())
+            );
+        }
+*/
+
 
     }
 }
